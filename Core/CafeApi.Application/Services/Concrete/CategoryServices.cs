@@ -52,8 +52,9 @@ namespace CafeApi.Application.Services.Concrete
 
         public async Task UpdateCategory(UpdateCategoryDto dto)
         {
-            var category = _mapper.Map<Category>(dto);
-            await _categoryRepository.UpdateAsync(category);
+            var category = await _categoryRepository.GetByIdAsync(dto.Id);
+            var categoryNew = _mapper.Map(dto,category);
+            await _categoryRepository.UpdateAsync(categoryNew);
         }
     }
 }

@@ -49,8 +49,9 @@ namespace CafeApi.Application.Services.Concrete
 
         public async Task UpdateMenuItem(UpdateMenuItemDto dto)
         {
-            var menuItem = _mapper.Map<MenuItem>(dto);
-            await _menuItemRepository.UpdateAsync(menuItem);
+            var menuItem = await _menuItemRepository.GetByIdAsync(dto.Id);
+            var newMenuItem = _mapper.Map(dto ,menuItem);
+            await _menuItemRepository.UpdateAsync(newMenuItem);
         }
     }
 }
