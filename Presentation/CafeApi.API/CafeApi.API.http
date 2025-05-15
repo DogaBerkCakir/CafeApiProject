@@ -1,4 +1,4 @@
-@CafeApi.API_HostAddress = http://localhost:5026
+@CafeApi.API_HostAddress = http://localhost:5159
 
 GET {{CafeApi.API_HostAddress}}/weatherforecast/
 Accept: application/json

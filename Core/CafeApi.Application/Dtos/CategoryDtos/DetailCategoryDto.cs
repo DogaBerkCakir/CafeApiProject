@@ -7,7 +7,7 @@ using CafeApi.Application.Dtos.MenuItemDtos;
 
 namespace CafeApi.Application.Dtos.CategoryDtos
 {
-    class DetailCategoryDto
+    public class DetailCategoryDto
     {
         public int Id { get; set; }
         public string Name { get; set; }
