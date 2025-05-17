@@ -3,6 +3,7 @@ using CafeApi.Application.Mapping;
 using CafeApi.Application.Services.Abstract;
 using CafeApi.Application.Services.Concrete;
 using CafeApi.Application.Validators.Category;
+using CafeApi.Application.Validators.MenuItem;
 using CafeApi.Persistence.Context;
 using CafeApi.Persistence.Repository;
 using FluentValidation;
@@ -26,6 +27,9 @@ builder.Services.AddAutoMapper(typeof(GeneralMapping));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateCategoryValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<UpdateCategoryValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateMenuItemValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<UpdateCategoryValidator>();
+
 
 
 builder.Services.AddControllers();
