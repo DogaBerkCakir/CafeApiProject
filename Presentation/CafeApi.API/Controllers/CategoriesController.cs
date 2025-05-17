@@ -1,4 +1,5 @@
 ﻿using CafeApi.Application.Dtos.CategoryDtos;
+using CafeApi.Application.Dtos.ResponseDtos;
 using CafeApi.Application.Services.Abstract;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -23,6 +24,13 @@ namespace CafeApi.API.Controllers
         public async Task<IActionResult> GetAllCategories()
         {
             var result = await _categoryServices.GetAllCategories();
+            if (!result.Success)
+            {
+                if(result.ErrorCodes == ErrorCodes.NotFound)
+                {
+                    return Ok(result);
+                }return BadRequest(result);
+            }
             return Ok(result);
         }
 
@@ -31,28 +39,60 @@ namespace CafeApi.API.Controllers
         public async Task<IActionResult> GetByIdCategory(int id)
         {
             var result = await _categoryServices.GetByIdCategory(id);
+            if(!result.Success)
+            {
+                if (result.ErrorCodes == ErrorCodes.NotFound)
+                {
+                    return Ok(result);
+                }
+                return BadRequest(result);
+            }
             return Ok(result);
         }
 
         [HttpPost]
         public async Task<IActionResult> AddCategory( CreateCategoryDto dto)
         {
-            await _categoryServices.AddCategory(dto);
-            return Ok("Kategori Ekleme İşlemi Başarılı...");
+            var result = await _categoryServices.AddCategory(dto);
+            if (!result.Success)
+            {
+                if (result.ErrorCodes == ErrorCodes.NotFound)
+                {
+                    return Ok(result);
+                }
+                return BadRequest(result);
+            }
+            return Ok(result);
         }
 
         [HttpPut]
         public async Task<IActionResult> UpdateCategory(UpdateCategoryDto dto)
         {
-            await _categoryServices.UpdateCategory(dto);
-            return Ok("Kategori Güncelleme İşlemi Başarılı...");
+            var result = await _categoryServices.UpdateCategory(dto);
+            if(!result.Success)
+            {
+                if (result.ErrorCodes == ErrorCodes.NotFound)
+                {
+                    return Ok(result);
+                }
+                return BadRequest(result);
+            }
+            return Ok(result);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategory(int id)
         {
-            await _categoryServices.DeleteCategory(id);
-            return Ok("Kategori Silme İşlemi Başarılı...");
+            var result = await _categoryServices.DeleteCategory(id);
+            if (!result.Success)
+            {
+                if (result.ErrorCodes == ErrorCodes.NotFound)
+                {
+                    return Ok(result);
+                }
+                return BadRequest(result);
+            }
+            return Ok(result );
         }
 
 
