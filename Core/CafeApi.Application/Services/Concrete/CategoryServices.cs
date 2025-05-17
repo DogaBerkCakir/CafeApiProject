@@ -21,14 +21,18 @@ namespace CafeApi.Application.Services.Concrete
         private readonly IMapper _mapper;
         private readonly IValidator<CreateCategoryDto> _createCategoryValidator;
         private readonly IValidator<UpdateCategoryDto> _updateCategoryValidator;
+        private readonly IGenericRepository<MenuItem> _menuItemRepository;
 
-        public CategoryServices(IGenericRepository<Category> categoryRepository, IMapper mapper, IValidator<CreateCategoryDto> createCategoryValidator, IValidator<UpdateCategoryDto> updateCategoryValidator)
+
+
+        public CategoryServices(IGenericRepository<Category> categoryRepository, IMapper mapper, IValidator<CreateCategoryDto> createCategoryValidator, IValidator<UpdateCategoryDto> updateCategoryValidator, IGenericRepository<MenuItem> menuItemRepository)
         {
 
             _categoryRepository = categoryRepository;
             _mapper = mapper;
             _createCategoryValidator = createCategoryValidator;
             _updateCategoryValidator = updateCategoryValidator;
+            _menuItemRepository = menuItemRepository;
         }
 
         public async Task<ResponseDto<object>> AddCategory(CreateCategoryDto dto)
@@ -142,6 +146,7 @@ namespace CafeApi.Application.Services.Concrete
             try
             {
                 var category = await _categoryRepository.GetByIdAsync(id);
+                var menuItems = await _menuItemRepository.GetAllAsync();
                 if (category == null)
                 {
                     return new ResponseDto<DetailCategoryDto>

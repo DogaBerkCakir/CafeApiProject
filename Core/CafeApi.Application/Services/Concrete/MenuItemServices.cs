@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using CafeApi.Application.Dtos.CategoryDtos;
 using CafeApi.Application.Dtos.MenuItemDtos;
 using CafeApi.Application.Dtos.ResponseDtos;
 using CafeApi.Application.Interfaces;
@@ -20,12 +21,15 @@ namespace CafeApi.Application.Services.Concrete
         private readonly IMapper _mapper;
         private readonly IValidator<CreateMenuItemDto> _createMenuItemValidator;
         private readonly IValidator<UpdateMenuItemDto> _updateMenuItemValidator;
-        public MenuItemServices(IGenericRepository<MenuItem> menuItemRepository, IMapper mapper, IValidator<CreateMenuItemDto> createMenuItemValidator, IValidator<UpdateMenuItemDto> updateMenuItemValidator)
+        private readonly IGenericRepository<Category> _categoryRepository;
+
+        public MenuItemServices(IGenericRepository<MenuItem> menuItemRepository, IMapper mapper, IValidator<CreateMenuItemDto> createMenuItemValidator, IValidator<UpdateMenuItemDto> updateMenuItemValidator, IGenericRepository<Category> categoryRepository)
         {
             _mapper = mapper;
             _menuItemRepository = menuItemRepository;
             _createMenuItemValidator = createMenuItemValidator;
             _updateMenuItemValidator = updateMenuItemValidator;
+            _categoryRepository = categoryRepository;
         }
         public async Task<ResponseDto<object>> AddMenuItem(CreateMenuItemDto dto)
         {
@@ -40,6 +44,17 @@ namespace CafeApi.Application.Services.Concrete
                         Data = null,
                         Message = string.Join(".",validationResult.Errors.Select(x => x.ErrorMessage)),
                         ErrorCodes = ErrorCodes.ValidationError
+                    };
+                }
+                var checkCategory = await _categoryRepository.GetByIdAsync(dto.CategoryId);
+                if (checkCategory == null)
+                {
+                    return new ResponseDto<object>
+                    {
+                        Success = false,
+                        Data = null,
+                        Message = "Kategori bulunamadi...",
+                        ErrorCodes = ErrorCodes.NotFound
                     };
                 }
 
@@ -103,6 +118,9 @@ namespace CafeApi.Application.Services.Concrete
             try
             {
                 var menuItems = await _menuItemRepository.GetAllAsync();
+                var categories = await _categoryRepository.GetAllAsync();
+               
+
                 if (menuItems.Count == 0)
                 {
                     return new ResponseDto<List<ResultMenuItemDto>>
@@ -115,6 +133,7 @@ namespace CafeApi.Application.Services.Concrete
 
                 }
                 var result = _mapper.Map<List<ResultMenuItemDto>>(menuItems);
+ 
                 return new ResponseDto<List<ResultMenuItemDto>>
                 {
                     Success = true,
@@ -139,6 +158,7 @@ namespace CafeApi.Application.Services.Concrete
         {
             try
             {
+                
                 var menuItem = await _menuItemRepository.GetByIdAsync(id);
                 if (menuItem == null)
                 {
@@ -146,7 +166,19 @@ namespace CafeApi.Application.Services.Concrete
                     {
                         Success = false,
                         Data = null,
-                        Message = "MenuItem bulunamadi....",
+                        Message = "MenuItem bulunamadi...",
+                        ErrorCodes = ErrorCodes.NotFound
+                    };
+                }
+                var category = await _categoryRepository.GetByIdAsync(menuItem.CategoryId);
+
+                if (category == null)
+                {
+                    return new ResponseDto<DetailMenuItemDto>
+                    {
+                        Success = false,
+                        Data = null,
+                        Message = "Kategori bulunamadi...",
                         ErrorCodes = ErrorCodes.NotFound
                     };
                 }
@@ -194,6 +226,18 @@ namespace CafeApi.Application.Services.Concrete
                         Success = false,
                         Data = null,
                         Message = "MenuItem bulunamadi...",
+                        ErrorCodes = ErrorCodes.NotFound
+                    };
+                }
+
+                var checkCategory = await _categoryRepository.GetByIdAsync(dto.CategoryId);
+                if (checkCategory == null)
+                {
+                    return new ResponseDto<object>
+                    {
+                        Success = false,
+                        Data = null,
+                        Message = "Kategori bulunamadi...",
                         ErrorCodes = ErrorCodes.NotFound
                     };
                 }

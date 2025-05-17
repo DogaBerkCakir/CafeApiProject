@@ -39,13 +39,15 @@ namespace CafeApi.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetByIdMenuItem(int id)
         {
+            
             var result = await _menuItemServices.GetByIdMenuItem(id);
             if (!result.Success)
             {
-                if(result.ErrorCodes == ErrorCodes.NotFound)
+                if(result.ErrorCodes is ErrorCodes.NotFound or ErrorCodes.ValidationError)
                 {
                     return Ok(result);
                 }
+
                 return BadRequest();
             }
             return Ok(result);

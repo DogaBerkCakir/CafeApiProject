@@ -19,10 +19,11 @@ namespace CafeApi.Application.Mapping
             CreateMap<Category,CreateCategoryDto>().ReverseMap();
             CreateMap<Category,UpdateCategoryDto>().ReverseMap();
 
-            CreateMap<MenuItem,ResultMenuItemDto>().ReverseMap();
+            CreateMap<MenuItem, ResultMenuItemDto>().ReverseMap();
             CreateMap<MenuItem, CreateMenuItemDto>().ReverseMap();
             CreateMap<MenuItem, DetailMenuItemDto>().ReverseMap();
             CreateMap<MenuItem, UpdateMenuItemDto>().ReverseMap();
+
         }
     }
 }
