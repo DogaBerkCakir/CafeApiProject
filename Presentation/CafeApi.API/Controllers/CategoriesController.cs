@@ -56,7 +56,7 @@ namespace CafeApi.API.Controllers
             var result = await _categoryServices.AddCategory(dto);
             if (!result.Success)
             {
-                if (result.ErrorCodes == ErrorCodes.NotFound)
+                if (result.ErrorCodes == ErrorCodes.ValidationError)
                 {
                     return Ok(result);
                 }
@@ -71,7 +71,7 @@ namespace CafeApi.API.Controllers
             var result = await _categoryServices.UpdateCategory(dto);
             if(!result.Success)
             {
-                if (result.ErrorCodes == ErrorCodes.NotFound)
+                if (result.ErrorCodes is ErrorCodes.ValidationError or ErrorCodes.NotFound )
                 {
                     return Ok(result);
                 }

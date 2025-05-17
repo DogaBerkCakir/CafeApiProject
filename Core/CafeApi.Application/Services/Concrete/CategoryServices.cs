@@ -9,7 +9,9 @@ using CafeApi.Application.Dtos.MenuItemDtos;
 using CafeApi.Application.Dtos.ResponseDtos;
 using CafeApi.Application.Interfaces;
 using CafeApi.Application.Services.Abstract;
+using CafeApi.Application.Validators.Category;
 using CafeApi.Domain.Entities;
+using FluentValidation;
 
 namespace CafeApi.Application.Services.Concrete
 {
@@ -17,18 +19,33 @@ namespace CafeApi.Application.Services.Concrete
     {
         private readonly IGenericRepository<Category> _categoryRepository;
         private readonly IMapper _mapper;
+        private readonly IValidator<CreateCategoryDto> _createCategoryValidator;
+        private readonly IValidator<UpdateCategoryDto> _updateCategoryValidator;
 
-        public CategoryServices(IGenericRepository<Category> categoryRepository, IMapper mapper)
+        public CategoryServices(IGenericRepository<Category> categoryRepository, IMapper mapper, IValidator<CreateCategoryDto> createCategoryValidator, IValidator<UpdateCategoryDto> updateCategoryValidator)
         {
 
             _categoryRepository = categoryRepository;
             _mapper = mapper;
+            _createCategoryValidator = createCategoryValidator;
+            _updateCategoryValidator = updateCategoryValidator;
         }
 
         public async Task<ResponseDto<object>> AddCategory(CreateCategoryDto dto)
         {
             try
             {
+                var validate = await _createCategoryValidator.ValidateAsync(dto);
+                if(!validate.IsValid)
+                {
+                    return new ResponseDto<object>
+                    {
+                        Success = false,
+                        Message = string.Join(" | ",validate.Errors.Select(x => x.ErrorMessage)),
+                        ErrorCodes = ErrorCodes.ValidationError,
+                        Data = null
+                    };
+                }
                 var category = _mapper.Map<Category>(dto);
                 await _categoryRepository.AddAsync(category);
                 return new ResponseDto<object>
@@ -160,6 +177,17 @@ namespace CafeApi.Application.Services.Concrete
         {
             try
             {
+                var validate = await _updateCategoryValidator.ValidateAsync(dto);
+                if(!validate.IsValid)
+                {
+                    return new ResponseDto<object>
+                    {
+                        Success = false,
+                        Message = string.Join(" | ", validate.Errors.Select(x => x.ErrorMessage)),
+                        ErrorCodes = ErrorCodes.ValidationError,
+                        Data = null
+                    };
+                }
                 var categorydb = await _categoryRepository.GetByIdAsync(dto.Id);
                 if (categorydb == null)
                 {

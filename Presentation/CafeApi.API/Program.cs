@@ -2,8 +2,10 @@ using CafeApi.Application.Interfaces;
 using CafeApi.Application.Mapping;
 using CafeApi.Application.Services.Abstract;
 using CafeApi.Application.Services.Concrete;
+using CafeApi.Application.Validators.Category;
 using CafeApi.Persistence.Context;
 using CafeApi.Persistence.Repository;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
@@ -19,9 +21,11 @@ builder.Services.AddScoped(typeof(IGenericRepository<>),typeof(GenericRepository
 builder.Services.AddScoped<IMenuItemServices,MenuItemServices>();
 builder.Services.AddScoped<ICategoryServices,CategoryServices>();
 
+
 builder.Services.AddAutoMapper(typeof(GeneralMapping));
 builder.Services.AddEndpointsApiExplorer();
-
+builder.Services.AddValidatorsFromAssemblyContaining<CreateCategoryValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<UpdateCategoryValidator>();
 
 
 builder.Services.AddControllers();
