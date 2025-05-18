@@ -17,6 +17,7 @@ namespace CafeApi.Persistence.Context
         public DbSet<Category> Categories { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<MenuItem> MenuItems { get; set; }
+        public DbSet<Table> Tables { get; set; }
 
 
         // bu sekilde fluent api seklinde de tablo baglama islemi yapılabilir......

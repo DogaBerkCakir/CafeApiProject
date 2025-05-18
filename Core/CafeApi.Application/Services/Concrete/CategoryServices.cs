@@ -58,6 +58,7 @@ namespace CafeApi.Application.Services.Concrete
                     Message = "Kategori Eklendi",
                     Data = category
                 };
+                var result = _mapper.Map<Category>(dto);
 
             }
             catch (Exception ex)
