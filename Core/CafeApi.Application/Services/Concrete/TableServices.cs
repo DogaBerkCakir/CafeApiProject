@@ -21,12 +21,14 @@ namespace CafeApi.Application.Services.Concrete
         private readonly IMapper _mapper;
         private readonly IValidator<CreateTableDto> _validator;
         private readonly IValidator<UpdateTableDto> _updateTableValidator;
-        public TableServices(IGenericRepository<Table> genericRepository, IMapper mapper, IValidator<CreateTableDto> validator, IValidator<UpdateTableDto> updateTableValidator)
+        private readonly ITableRepository _tableRepository;
+        public TableServices(IGenericRepository<Table> genericRepository, IMapper mapper, IValidator<CreateTableDto> validator, IValidator<UpdateTableDto> updateTableValidator, ITableRepository tableRepository)
         {
             _genericRepository = genericRepository;
             _mapper = mapper;
             _validator = validator;
             _updateTableValidator = updateTableValidator;
+            _tableRepository = tableRepository;
         }
 
         public async Task<ResponseDto<object>> AddTable(CreateTableDto createTableDto)
@@ -148,7 +150,37 @@ namespace CafeApi.Application.Services.Concrete
 
         public async Task<ResponseDto<DetailTableDto>> GetByTableNumber(int tableNumber) //ayrı bir repository olusturmamız gerekecek generic repoda bu tanımlanmadı bu class a ozgu cunku
         {
-            return null;
+            try
+            {
+                var table = await _tableRepository.GetByTableNumberAsync(tableNumber);
+                if (table == null)
+                {
+                    return new ResponseDto<DetailTableDto>
+                    {
+                        Success = false,
+                        Message = "Masa Bulunamadı",
+                        ErrorCodes = ErrorCodes.NotFound
+                    };
+                }
+                var result = _mapper.Map<DetailTableDto>(table);
+                return new ResponseDto<DetailTableDto>
+                {
+                    Success = true,
+                    Message = "Masa Id ile bulundu...",
+                    Data = result
+                };
+
+            }
+            catch (Exception ex)
+            {
+
+                return new ResponseDto<DetailTableDto>
+                {
+                    Success = false,
+                    Message = "Bir Hata Oluştu",
+                    ErrorCodes = ErrorCodes.Exception
+                };
+            }
         }
 
         public async Task<ResponseDto<DetailTableDto>> GetTableById(int id)

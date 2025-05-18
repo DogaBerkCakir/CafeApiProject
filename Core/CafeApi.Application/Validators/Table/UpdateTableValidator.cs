@@ -17,9 +17,8 @@ namespace CafeApi.Application.Validators.Table
                 .WithMessage("Masa numarası boş olamaz.")
                 .GreaterThan(0)
                 .WithMessage("Masa numarası 0'dan büyük olmalıdır.");
-            RuleFor(x => x.IsActive)
-                .NotEmpty()
-                .WithMessage("Masa boş mu dolu mu belirtilmeli.");
+
+
             RuleFor(x => x.Capacity)
                 .NotEmpty()
                 .WithMessage("Masa kapasitesi boş olamaz.")
@@ -29,6 +28,6 @@ namespace CafeApi.Application.Validators.Table
                 .WithMessage("Masa kapasitesi 20'den büyük olamaz.");
         }
     }
-    {
-    }
+    
+    
 }
