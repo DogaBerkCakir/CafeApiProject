@@ -23,9 +23,11 @@ builder.Services.AddScoped(typeof(IGenericRepository<>),typeof(GenericRepository
 builder.Services.AddScoped<ITableRepository, TableRepository>();
 
 
+builder.Services.AddScoped<IOrderItemServices, OrderItemService>();
 builder.Services.AddScoped<IMenuItemServices,MenuItemServices>();
 builder.Services.AddScoped<ICategoryServices,CategoryServices>();
 builder.Services.AddScoped<ITableServices, TableServices>();
+
 
 
 builder.Services.AddAutoMapper(typeof(GeneralMapping));

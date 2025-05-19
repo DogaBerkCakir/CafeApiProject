@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using AutoMapper;
 using CafeApi.Application.Dtos.CategoryDtos;
 using CafeApi.Application.Dtos.MenuItemDtos;
+using CafeApi.Application.Dtos.OrderDtos;
+using CafeApi.Application.Dtos.OrderItemDtos;
 using CafeApi.Application.Dtos.TableDtos;
 using CafeApi.Domain.Entities;
 
@@ -29,6 +31,19 @@ namespace CafeApi.Application.Mapping
             CreateMap<Table, DetailTableDto>().ReverseMap();
             CreateMap<Table, UpdateTableDto>().ReverseMap();
             CreateMap<Table, CreateTableDto>().ReverseMap();
+
+            CreateMap<Order, ResultOrderDto>().ReverseMap();
+            CreateMap<Order, DetailOrderDto>().ReverseMap();
+            CreateMap<Order, CreateOrderDto>().ReverseMap();
+            CreateMap<Order, UpdateOrderDto>().ReverseMap();
+
+            CreateMap<OrderItem, ResultOrderItemDto>().ReverseMap();
+            CreateMap<OrderItem, DetailOrderItemDto>().ReverseMap();
+            CreateMap<OrderItem, CreateOrderItemDto>().ReverseMap();
+            CreateMap<OrderItem, UpdateOrderItemDto>().ReverseMap();
+
+
+
 
 
 

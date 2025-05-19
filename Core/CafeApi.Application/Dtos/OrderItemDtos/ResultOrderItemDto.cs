@@ -8,7 +8,7 @@ using CafeApi.Domain.Entities;
 
 namespace CafeApi.Application.Dtos.OrderItemDtos
 {
-    public class ResultOrederItemDto
+    public class ResultOrderItemDto
     {
         public int Id { get; set; }
         public int OrderId { get; set; }
