@@ -8,7 +8,7 @@ namespace CafeApi.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TablesController : ControllerBase
+    public class TablesController : BaseController
     {
         private readonly ITableServices _tableServices;
         public TablesController(ITableServices tableServices)
@@ -21,31 +21,14 @@ namespace CafeApi.API.Controllers
         public async Task<IActionResult> GetAllTables()
         {
             var result = await _tableServices.GetAllTables();
-            if (!result.Success)
-            {
-                if (result.ErrorCodes == ErrorCodes.NotFound)
-                {
-                    return Ok(result);
-                }
-                return BadRequest(result);
-            }
-
-            return Ok(result);
+            return CreateResponse(result);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetTableById(int id)
         {
             var result = await _tableServices.GetTableById(id);
-            if (!result.Success)
-            {
-                if (result.ErrorCodes == ErrorCodes.NotFound)
-                {
-                    return Ok(result);
-                }
-                return BadRequest(result);
-            }
-            return Ok(result);
+            return CreateResponse(result);
         }
 
 
@@ -53,59 +36,54 @@ namespace CafeApi.API.Controllers
         public async Task<IActionResult> GetByTableNumber(int tableNumber)
         {
             var result = await _tableServices.GetByTableNumber(tableNumber);
-            if (!result.Success)
-            {
-                if (result.ErrorCodes == ErrorCodes.NotFound)
-                {
-                    return Ok(result);
-                }
-                return BadRequest(result);
-            }
-            return Ok(result);
+            return CreateResponse(result);
         }
         [HttpPost]
         public async Task<IActionResult> AddTable(CreateTableDto createTableDto)
         {
             var result = await _tableServices.AddTable(createTableDto);
-            if (!result.Success)
-            {
-                if (result.ErrorCodes == ErrorCodes.ValidationError)
-                {
-                    return BadRequest(result);
-                }
-                return BadRequest(result);
-            }
-            return Ok(result);
+            return CreateResponse(result);
         }
 
         [HttpPut]
         public async Task<IActionResult> UpdateTable(UpdateTableDto updateTableDto)
         {
             var result = await _tableServices.UpdateTable(updateTableDto);
-            if (!result.Success)
-            {
-                if (result.ErrorCodes == ErrorCodes.ValidationError)
-                {
-                    return BadRequest(result);
-                }
-                return BadRequest(result);
-            }
-            return Ok(result);
+            return CreateResponse(result);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTable(int id)
         {
             var result = await _tableServices.DeleteTable(id);
-            if (!result.Success)
-            {
-                if (result.ErrorCodes == ErrorCodes.NotFound)
-                {
-                    return Ok(result);
-                }
-                return BadRequest(result);
-            }
-            return Ok(result);
+            return CreateResponse(result);
+        }
+
+        [HttpGet("getallactivetables")]
+        public async Task<IActionResult> GetAllActiveTables()
+        {
+            var result = await _tableServices.GetAllActiveTables();
+            return CreateResponse(result);
+        }
+        [HttpGet("getallactivetablesgeneric")]
+        public async Task<IActionResult> GetAllActiveTablesGeneric()
+        {
+            var result = await _tableServices.GetAllActiveTablesGeneric();
+            return CreateResponse(result);
+        }
+
+        [HttpPut("updatetablestatusbyid")]
+        public async Task<IActionResult> UpdateTableStatusById(int tableId)
+        {
+            var result = await _tableServices.UpdateTableStatusById(tableId);
+            return CreateResponse(result);
+        }
+
+        [HttpPut("updatetablestatusbynumber")]
+        public async Task<IActionResult> UpdateTableStatusByNumber(int tableNumber)
+        {
+            var result = await _tableServices.UpdateTableStatusByNumber(tableNumber);
+            return CreateResponse(result);
         }
     }
 }

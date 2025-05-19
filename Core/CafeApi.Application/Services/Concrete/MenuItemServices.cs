@@ -43,7 +43,7 @@ namespace CafeApi.Application.Services.Concrete
                         Success = false,
                         Data = null,
                         Message = string.Join(".",validationResult.Errors.Select(x => x.ErrorMessage)),
-                        ErrorCodes = ErrorCodes.ValidationError
+                        ErrorCode = ErrorCodes.ValidationError
                     };
                 }
                 var checkCategory = await _categoryRepository.GetByIdAsync(dto.CategoryId);
@@ -54,7 +54,7 @@ namespace CafeApi.Application.Services.Concrete
                         Success = false,
                         Data = null,
                         Message = "Kategori bulunamadi...",
-                        ErrorCodes = ErrorCodes.NotFound
+                        ErrorCode = ErrorCodes.NotFound
                     };
                 }
 
@@ -67,7 +67,7 @@ namespace CafeApi.Application.Services.Concrete
                         Success = false,
                         Data = null,
                         Message = "MenuItem eklenemedi...",
-                        ErrorCodes = ErrorCodes.Exception
+                        ErrorCode = ErrorCodes.Exception
                     };
                 }
                 return new ResponseDto<object>
@@ -85,7 +85,7 @@ namespace CafeApi.Application.Services.Concrete
                     Data = null,
                     Success = false,
                     Message = "Bir hata oluştu...",
-                    ErrorCodes = ErrorCodes.Exception
+                    ErrorCode = ErrorCodes.Exception
                 };
             }
 
@@ -101,7 +101,7 @@ namespace CafeApi.Application.Services.Concrete
                     Success = false,
                     Data = null,
                     Message = "MenuItem bulunamadi...",
-                    ErrorCodes = ErrorCodes.NotFound
+                    ErrorCode = ErrorCodes.NotFound
                 };
             }
             await _menuItemRepository.DeleteAsync(menuItem);
@@ -128,7 +128,7 @@ namespace CafeApi.Application.Services.Concrete
                         Success = false,
                         Data = null,
                         Message = "MenuItems bulunamadi....",
-                        ErrorCodes = ErrorCodes.NotFound
+                        ErrorCode = ErrorCodes.NotFound
                     };
 
                 }
@@ -149,7 +149,7 @@ namespace CafeApi.Application.Services.Concrete
                     Success = false,
                     Data = null,
                     Message = "Bir hata oluştu..." ,
-                    ErrorCodes = ErrorCodes.Exception
+                    ErrorCode = ErrorCodes.Exception
                 };
             }
         }
@@ -167,7 +167,7 @@ namespace CafeApi.Application.Services.Concrete
                         Success = false,
                         Data = null,
                         Message = "MenuItem bulunamadi...",
-                        ErrorCodes = ErrorCodes.NotFound
+                        ErrorCode = ErrorCodes.NotFound
                     };
                 }
                 var category = await _categoryRepository.GetByIdAsync(menuItem.CategoryId);
@@ -179,7 +179,7 @@ namespace CafeApi.Application.Services.Concrete
                         Success = false,
                         Data = null,
                         Message = "Kategori bulunamadi...",
-                        ErrorCodes = ErrorCodes.NotFound
+                        ErrorCode = ErrorCodes.NotFound
                     };
                 }
                 var result = _mapper.Map<DetailMenuItemDto>(menuItem);
@@ -195,7 +195,7 @@ namespace CafeApi.Application.Services.Concrete
             {
                 return new ResponseDto<DetailMenuItemDto>
                 {
-                    ErrorCodes = ErrorCodes.Exception,
+                    ErrorCode = ErrorCodes.Exception,
                     Success = false,
                     Data = null,
                     Message = "Bir hata oluştu..."
@@ -215,7 +215,7 @@ namespace CafeApi.Application.Services.Concrete
                         Success = false,
                         Data = null,
                         Message = string.Join(".", validationResult.Errors.Select(x => x.ErrorMessage)),
-                        ErrorCodes = ErrorCodes.ValidationError
+                        ErrorCode = ErrorCodes.ValidationError
                     };
                 }
                 var menuItem = await _menuItemRepository.GetByIdAsync(dto.Id);
@@ -226,8 +226,8 @@ namespace CafeApi.Application.Services.Concrete
                         Success = false,
                         Data = null,
                         Message = "MenuItem bulunamadi...",
-                        ErrorCodes = ErrorCodes.NotFound
-                    };
+                        ErrorCode   = ErrorCodes.NotFound
+                    };  
                 }
 
                 var checkCategory = await _categoryRepository.GetByIdAsync(dto.CategoryId);
@@ -238,7 +238,7 @@ namespace CafeApi.Application.Services.Concrete
                         Success = false,
                         Data = null,
                         Message = "Kategori bulunamadi...",
-                        ErrorCodes = ErrorCodes.NotFound
+                        ErrorCode = ErrorCodes.NotFound
                     };
                 }
 
@@ -259,7 +259,7 @@ namespace CafeApi.Application.Services.Concrete
                     Success = false,
                     Data = null,
                     Message = "Bir hata oluştu...",
-                    ErrorCodes = ErrorCodes.Exception
+                    ErrorCode = ErrorCodes.Exception
                 };
             }
         }

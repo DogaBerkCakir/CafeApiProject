@@ -42,7 +42,7 @@ namespace CafeApi.Application.Services.Concrete
                     {
                         Success = false,
                         Message = string.Join(".", validationResult.Errors.Select(x => x.ErrorMessage)),
-                        ErrorCodes = ErrorCodes.ValidationError
+                        ErrorCode = ErrorCodes.ValidationError
                     };
                 }
                 var checkTable = await _genericRepository.GetByIdAsync(createTableDto.TableNumber);
@@ -52,7 +52,7 @@ namespace CafeApi.Application.Services.Concrete
                     {
                         Success = false,
                         Message = "Bu masa numarası zaten mevcut",
-                        ErrorCodes = ErrorCodes.ValidationError
+                        ErrorCode = ErrorCodes.ValidationError
                     };
                 }
                 var table = _mapper.Map<Table>(createTableDto);
@@ -71,7 +71,7 @@ namespace CafeApi.Application.Services.Concrete
                 {
                     Success = false,
                     Message = "Bir Hata Oluştu",
-                    ErrorCodes = ErrorCodes.Exception
+                    ErrorCode = ErrorCodes.Exception
                 };
             }
         }
@@ -87,7 +87,7 @@ namespace CafeApi.Application.Services.Concrete
                     {
                         Success = false,
                         Message = "Masa Bulunamadı",
-                        ErrorCodes = ErrorCodes.NotFound
+                        ErrorCode = ErrorCodes.NotFound
                     };
                 }
                 await _genericRepository.DeleteAsync(table);
@@ -106,11 +106,78 @@ namespace CafeApi.Application.Services.Concrete
                 {
                     Success = false,
                     Message = "Bir Hata Oluştu",
-                    ErrorCodes = ErrorCodes.Exception
+                    ErrorCode = ErrorCodes.Exception
                 };
             }
 
 
+        }
+
+        public async Task<ResponseDto<List<ResultTableDto>>> GetAllActiveTablesGeneric() // yavas olan
+        {
+            try
+            {
+                var tables = await _genericRepository.GetAllAsync();
+                tables = tables.Where(x => x.IsActive == true).ToList(); // bu sekilde de yapabiliriz ama yavas olur cunku once tum verileri cagırdık.....
+                if (tables == null || tables.Count == 0)
+                {
+                    return new ResponseDto<List<ResultTableDto>>
+                    {
+                        Success = false,
+                        Message = "Masa Bulunamadı",
+                        ErrorCode = ErrorCodes.NotFound
+                    };
+                }
+                var result = _mapper.Map<List<ResultTableDto>>(tables);
+                return new ResponseDto<List<ResultTableDto>>
+                {
+                    Success = true,
+                    Message = "Masalar Listesi",
+                    Data = result
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ResponseDto<List<ResultTableDto>>
+                {
+                    Success = false,
+                    Message = "Bir Hata Oluştu",
+                    ErrorCode = ErrorCodes.Exception
+                };
+            }
+        }
+
+        public async Task<ResponseDto<List<ResultTableDto>>> GetAllActiveTables()
+        {
+            try
+            {
+                var tables = await _tableRepository.GetAllActiveTablesAsync();
+                if (tables == null || tables.Count == 0)
+                {
+                    return new ResponseDto<List<ResultTableDto>>
+                    {
+                        Success = false,
+                        Message = "Masa Bulunamadı",
+                        ErrorCode = ErrorCodes.NotFound
+                    };
+                }
+                var result = _mapper.Map<List<ResultTableDto>>(tables);
+                return new ResponseDto<List<ResultTableDto>>
+                {
+                    Success = true,
+                    Message = "Masalar Listesi",
+                    Data = result
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ResponseDto<List<ResultTableDto>>
+                {
+                    Success = false,
+                    Message = "Bir Hata Oluştu",
+                    ErrorCode = ErrorCodes.Exception
+                };
+            }
         }
 
         public async Task<ResponseDto<List<ResultTableDto>>> GetAllTables()
@@ -124,7 +191,7 @@ namespace CafeApi.Application.Services.Concrete
                     {
                         Success = false,
                         Message = "Masa Bulunamadı",
-                        ErrorCodes = ErrorCodes.NotFound
+                        ErrorCode    = ErrorCodes.NotFound
                     };
                 }
                 var result = _mapper.Map<List<ResultTableDto>>(tables);
@@ -142,7 +209,7 @@ namespace CafeApi.Application.Services.Concrete
                 {
                     Success = false,
                     Message = "Bir Hata Oluştu",
-                    ErrorCodes = ErrorCodes.Exception
+                    ErrorCode = ErrorCodes.Exception
                 };
 
             }
@@ -159,7 +226,7 @@ namespace CafeApi.Application.Services.Concrete
                     {
                         Success = false,
                         Message = "Masa Bulunamadı",
-                        ErrorCodes = ErrorCodes.NotFound
+                        ErrorCode = ErrorCodes.NotFound
                     };
                 }
                 var result = _mapper.Map<DetailTableDto>(table);
@@ -178,7 +245,7 @@ namespace CafeApi.Application.Services.Concrete
                 {
                     Success = false,
                     Message = "Bir Hata Oluştu",
-                    ErrorCodes = ErrorCodes.Exception
+                    ErrorCode = ErrorCodes.Exception
                 };
             }
         }
@@ -194,7 +261,7 @@ namespace CafeApi.Application.Services.Concrete
                     {
                         Success = false,
                         Message = "Masa Bulunamadı",
-                        ErrorCodes = ErrorCodes.NotFound
+                        ErrorCode = ErrorCodes.NotFound
                     };
                 }
                 var result = _mapper.Map<DetailTableDto>(table);
@@ -213,7 +280,7 @@ namespace CafeApi.Application.Services.Concrete
                 {
                     Success = false,
                     Message = "Bir Hata Oluştu",
-                    ErrorCodes = ErrorCodes.Exception
+                    ErrorCode = ErrorCodes.Exception
                 }
                 ;
             }
@@ -230,7 +297,7 @@ namespace CafeApi.Application.Services.Concrete
                     {
                         Success = false,
                         Message = string.Join(".", validationResult.Errors.Select(x => x.ErrorMessage)),
-                        ErrorCodes = ErrorCodes.ValidationError
+                        ErrorCode = ErrorCodes.ValidationError
                     };
                 }
 
@@ -253,13 +320,89 @@ namespace CafeApi.Application.Services.Concrete
                 {
                     Success = false,
                     Message = "Bir Hata Oluştu",
-                    ErrorCodes = ErrorCodes.Exception
+                    ErrorCode = ErrorCodes.Exception
+                };
+            }
+
+        }
+
+        public async Task<ResponseDto<object>> UpdateTableStatusByNumber(int tableNumber)
+        {
+            try
+            {
+                var rs = await _tableRepository.GetByTableNumberAsync(tableNumber);
+                if (rs == null)
+                {
+                    return new ResponseDto<object>
+                    {
+                        Success = false,
+                        Message = "Masa Bulunamadı",
+                        ErrorCode = ErrorCodes.NotFound
+                    };
+                }
+
+                rs.IsActive = !rs.IsActive;
+                await _genericRepository.UpdateAsync(rs);
+                return new ResponseDto<object>
+                {
+                    Success = true,
+                    Message = $"Masa Güncellendi ve {rs.IsActive} oldu..",
+                    Data = rs
+                };
+
+            }
+            catch (Exception ex)
+            {
+
+                return new ResponseDto<object>
+                {
+                    Success = false,
+                    Message = "Bir Hata Oluştu",
+                    ErrorCode = ErrorCodes.Exception
+                };
+            }
+        }
+
+        public async Task<ResponseDto<object>> UpdateTableStatusById(int tableId)
+        {
+            try
+            {
+                var rs = await _genericRepository.GetByIdAsync(tableId);
+                if (rs == null)
+                {
+                    return new ResponseDto<object>
+                    {
+                        Success = false,
+                        Message = "Masa Bulunamadı",
+                        ErrorCode = ErrorCodes.NotFound
+                    };
+                }
+
+                rs.IsActive = !rs.IsActive;
+                await _genericRepository.UpdateAsync(rs);
+                return new ResponseDto<object>
+                {
+                    Success = true,
+                    Message = $"Masa Güncellendi ve {rs.IsActive} oldu..",
+                    Data = rs
+                };
+            }
+            catch (Exception ex)
+            {
+
+                return new ResponseDto<object>
+                {
+                    Success = false,
+                    Message = "Bir Hata Oluştu",
+                    ErrorCode = ErrorCodes.Exception
                 };
             }
 
 
 
 
+
+           
         }
     }
 }

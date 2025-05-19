@@ -8,7 +8,7 @@ namespace CafeApi.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MenuItemsController : ControllerBase
+    public class MenuItemsController : BaseController
     {
         private readonly IMenuItemServices _menuItemServices;
 
@@ -23,15 +23,7 @@ namespace CafeApi.API.Controllers
         public async Task<IActionResult> GetAllMenuItems()
         {
             var result = await _menuItemServices.GetAllMenuItems();
-            if (!result.Success)
-            {
-                if(result.ErrorCodes == ErrorCodes.NotFound)
-                {
-                    return Ok(result);
-                }
-                return BadRequest();
-            }
-            return Ok(result);
+            return CreateResponse(result);
         }
 
 
@@ -41,31 +33,14 @@ namespace CafeApi.API.Controllers
         {
             
             var result = await _menuItemServices.GetByIdMenuItem(id);
-            if (!result.Success)
-            {
-                if(result.ErrorCodes is ErrorCodes.NotFound or ErrorCodes.ValidationError)
-                {
-                    return Ok(result);
-                }
-
-                return BadRequest();
-            }
-            return Ok(result);
+            return CreateResponse(result);
         }
         [HttpPost]
         public async Task<IActionResult> AddMenuItem(CreateMenuItemDto dto)
         {
             var result = await _menuItemServices.AddMenuItem(dto);
 
-            if (!result.Success)
-            {
-                if (result.ErrorCodes is ErrorCodes.ValidationError or ErrorCodes.NotFound)
-                {
-                    return Ok(result);
-                }
-                return BadRequest();
-            }
-            return Ok("Menü Ekleme İşlemi Başarılı...");
+            return CreateResponse(result);
 
         }
         
@@ -74,15 +49,7 @@ namespace CafeApi.API.Controllers
         public async Task<IActionResult> UpdateMenuItem(UpdateMenuItemDto dto)
         {
             var result = await _menuItemServices.UpdateMenuItem(dto);
-            if(!result.Success)
-            {
-                if (result.ErrorCodes is ErrorCodes.ValidationError or ErrorCodes.NotFound)
-                {
-                    return Ok(result);
-                }
-                return BadRequest();
-            }
-            return Ok("Menü Güncelleme İşlemi Başarılı...");
+            return CreateResponse(result);
         }
 
 
@@ -91,15 +58,7 @@ namespace CafeApi.API.Controllers
         public async Task<IActionResult> DeleteMenuItem(int id)
         {
             var result = await _menuItemServices.DeleteMenuItem(id);
-            if (!result.Success)
-            {
-                if (result.ErrorCodes == ErrorCodes.NotFound)
-                {
-                    return Ok(result);
-                }
-                return BadRequest();
-            }
-            return Ok("Menü Silme İşlemi Başarılı...");
+            return CreateResponse(result);
         }
     }
 }
