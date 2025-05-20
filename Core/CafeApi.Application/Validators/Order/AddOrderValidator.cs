@@ -12,8 +12,7 @@ namespace CafeApi.Application.Validators.Order
     {
         public AddOrderValidator()
         {
-            RuleFor(x => x.TotalPrice).NotEmpty().WithMessage("Bos gönderemezsin")
-                .GreaterThan(0).WithMessage("0 dan buyuk olmalı..");
+
         }
     }
 }

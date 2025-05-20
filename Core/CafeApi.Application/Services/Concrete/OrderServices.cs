@@ -52,6 +52,19 @@ namespace CafeApi.Application.Services.Concrete
                 }
 
                 var order = _mapper.Map<Order>(dto);
+
+                order.Status = OrderStatus.Hazir;
+                order.CreatedAt = DateTime.Now;
+                decimal totalPrice = 0;
+
+                foreach (var item in order.OrderItems)
+                {
+                    item.MenuItem = await _menuItemRepository.GetByIdAsync(item.MenuItemId);
+                    item.Price = item.MenuItem.Price * item.Quantity;
+                    totalPrice += item.Price;
+                }
+                order.TotalPrice = totalPrice;  
+
                 await _orderRepository.AddAsync(order);
                 return new ResponseDto<object>
                 {
