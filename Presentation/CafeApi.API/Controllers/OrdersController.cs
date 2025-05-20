@@ -52,5 +52,19 @@ namespace CafeApi.API.Controllers
             return CreateResponse(result);
         }
 
+        [HttpGet("GetAllOrderWithDetail")]
+        public async Task<IActionResult> GetAllOrderWithDetail()
+        {
+            var result = await _orderServices.GetAllOrderWithDetail();
+            return CreateResponse(result);
+        }
+
+        [HttpGet("GetAllOrderByIdWithDetail")]
+        public async Task<IActionResult> GetAllOrdersByIdWithDetails(int id)
+        {
+            var result = await _orderServices.GetAllOrdersByIdWithDetails(id);
+            return CreateResponse(result);
+        }
+
     }
 }

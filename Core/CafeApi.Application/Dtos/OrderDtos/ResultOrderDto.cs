@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CafeApi.Application.Dtos.OrderItemDtos;
 using CafeApi.Domain.Entities;
 
 namespace CafeApi.Application.Dtos.OrderDtos
@@ -15,7 +16,7 @@ namespace CafeApi.Application.Dtos.OrderDtos
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdateAt { get; set; }
         public string Status { get; set; }
-        public List<ResultOrderDto> OrderItems { get; set; }
+        public List<ResultOrderItemDto> OrderItems { get; set; }
 
     }
 }

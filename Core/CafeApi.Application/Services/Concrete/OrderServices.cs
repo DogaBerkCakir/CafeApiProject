@@ -10,6 +10,7 @@ using CafeApi.Application.Dtos.ResponseDtos;
 using CafeApi.Application.Interfaces;
 using CafeApi.Application.Services.Abstract;
 using CafeApi.Domain.Entities;
+using CafeApi.Persistence.Repository;
 using FluentValidation;
 
 namespace CafeApi.Application.Services.Concrete
@@ -20,13 +21,18 @@ namespace CafeApi.Application.Services.Concrete
         private readonly IMapper _mapper;
         private readonly IValidator<CreateOrderDto> _createOrderValidator;
         private readonly IValidator<UpdateOrderDto> _updateOrderValidator;
-
-        public OrderServices(IGenericRepository<Order> orderRepository, IMapper mapper, IValidator<CreateOrderDto> validator, IValidator<UpdateOrderDto> updateOrderValidator)
+        private readonly IGenericRepository<OrderItem> _orderItemRepository;
+        private readonly IGenericRepository<MenuItem> _menuItemRepository;
+        private readonly IOrderRepository _orderRepository1;
+        public OrderServices(IGenericRepository<Order> orderRepository, IMapper mapper, IValidator<CreateOrderDto> validator, IValidator<UpdateOrderDto> updateOrderValidator, IGenericRepository<OrderItem> orderItemRepository, IGenericRepository<MenuItem> menuItemRepository, IOrderRepository orderRepository1)
         {
             _orderRepository = orderRepository;
             _mapper = mapper;
             _createOrderValidator = validator;
             _updateOrderValidator = updateOrderValidator;
+            _orderItemRepository = orderItemRepository;
+            _menuItemRepository = menuItemRepository;
+            _orderRepository1 = orderRepository1;
         }
 
         public async Task<ResponseDto<object>> AddOrder(CreateOrderDto dto)
@@ -114,6 +120,9 @@ namespace CafeApi.Application.Services.Concrete
             try
             {
                 var orders = await _orderRepository.GetAllAsync();
+                var orderItems = await _orderItemRepository.GetAllAsync();
+                var menuItems = await _menuItemRepository.GetAllAsync();
+
                 if (orders.Count == 0 || orders == null)
                 {
                     return new ResponseDto<List<ResultOrderDto>>
@@ -124,11 +133,85 @@ namespace CafeApi.Application.Services.Concrete
                         ErrorCode = ErrorCodes.NotFound
                     };
                 }
-
-                var result = _mapper.Map<List<ResultOrderDto>>(orders);
+                var result = _mapper.Map<List<ResultOrderDto>>(orders );
                 return new ResponseDto<List<ResultOrderDto>>
                 {
                     Data = result,
+                    Success = true,
+                    Message = "Siparişler başarıyla listelendi.",
+                    ErrorCode = null
+                };
+
+            }
+            catch (Exception ex)
+            {
+
+                return new ResponseDto<List<ResultOrderDto>>
+                {
+                    Data = null,
+                    Success = false,
+                    Message = "Bir hata oluştu...",
+                    ErrorCode = ErrorCodes.Exception
+                };
+            }
+        }
+
+        public async Task<ResponseDto<ResultOrderDto>> GetAllOrdersByIdWithDetails(int orderId)
+        {
+            try
+            {
+                var result = await _orderRepository1.GetAllOrdersByIdWithDetailsAsync(orderId);
+                if (result == null)
+                {
+                    return new ResponseDto<ResultOrderDto>
+                    {
+                        Data = null,
+                        Success = false,
+                        Message = "Sipariş bulunamadı.",
+                        ErrorCode = ErrorCodes.NotFound
+                    };
+                }
+                var mappedResult = _mapper.Map<ResultOrderDto>(result);
+                return new ResponseDto<ResultOrderDto>
+                {
+                    Data = mappedResult,
+                    Success = true,
+                    Message = "Sipariş başarıyla listelendi.",
+                    ErrorCode = null
+                };
+
+            }
+            catch (Exception ex)
+            {
+
+                return new ResponseDto<ResultOrderDto>              {
+                    Data = null,
+                    Success = false,
+                    Message = "Bir hata oluştu... ",
+                    ErrorCode = ErrorCodes.Exception
+                };
+            }
+        }
+            
+        public async Task<ResponseDto<List<ResultOrderDto>>> GetAllOrderWithDetail()
+        {
+            try
+            {
+                var result = await _orderRepository1.GetAllOrdersDetailsAsync();
+                if (result == null)
+                {
+                    return new ResponseDto<List<ResultOrderDto>>
+                    {
+                        Data = null,
+                        Success = false,
+                        Message = "Siparişler bulunamadı.",
+                        ErrorCode = ErrorCodes.NotFound
+                    };
+                }
+                var mappedResult = _mapper.Map<List<ResultOrderDto>>(result);
+                return new ResponseDto<List<ResultOrderDto>>
+                {
+                    Data = mappedResult,
                     Success = true,
                     Message = "Siparişler başarıyla listelendi.",
                     ErrorCode = null

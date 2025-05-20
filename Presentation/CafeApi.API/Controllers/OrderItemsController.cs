@@ -1,4 +1,5 @@
 ﻿using CafeApi.Application.Dtos.OrderDtos;
+using CafeApi.Application.Dtos.OrderItemDtos;
 using CafeApi.Application.Services.Abstract;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -29,7 +30,7 @@ namespace CafeApi.API.Controllers
             return CreateResponse(result);
         }
         [HttpPost]
-        public async Task<IActionResult> AddOrderItem(CreateOrderDto dto)
+        public async Task<IActionResult> AddOrderItem(CreateOrderItemDto dto)
         {
             var result = await _orderItemServices.AddOrderItem(dto);
             return CreateResponse(result);
@@ -42,6 +43,12 @@ namespace CafeApi.API.Controllers
             return CreateResponse(result);
         }
 
+        [HttpPut]
+        public async Task<IActionResult> UpdateOrderItem(UpdateOrderItemDto dto)
+        {
+            var result = await _orderItemServices.UpdateOrderItem(dto);
+            return CreateResponse(result);
+        }
 
 
     }

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using CafeApi.Application.Dtos.OrderDtos;
+using CafeApi.Application.Dtos.OrderItemDtos;
 using CafeApi.Application.Dtos.ResponseDtos;
 using CafeApi.Application.Interfaces;
 using CafeApi.Application.Services.Abstract;
@@ -15,224 +16,208 @@ namespace CafeApi.Application.Services.Concrete
 {
     public class OrderItemService : IOrderItemServices
     {
-        private readonly IGenericRepository<OrderItem> _genericRepository;
+        private readonly IGenericRepository<OrderItem> _orderItemRepository;
         private readonly IMapper _mapper;
-        private readonly IValidator<CreateOrderDto> _createOrderValidator;
-        private readonly IValidator<UpdateOrderDto> _updateOrderValidator;
+        private readonly IValidator<CreateOrderItemDto> _createOrderItemValidator;
+        private readonly IValidator<UpdateOrderItemDto> _updateOrderItemValidator;
+        private readonly IGenericRepository<MenuItem> _menuItemRepository;
 
-
-
-        public OrderItemService(IGenericRepository<OrderItem> genericRepository, IMapper mapper, IValidator<CreateOrderDto> createOrderValidator, IValidator<UpdateOrderDto> updateOrderValidator)
+        public OrderItemService(IGenericRepository<OrderItem> orderItemRepository, IMapper mapper, IValidator<CreateOrderItemDto> createOrderItemValidator, IValidator<UpdateOrderItemDto> updateOrderItemValidator, IGenericRepository<MenuItem> menuItemRepository)
         {
-            _genericRepository = genericRepository;
+            _orderItemRepository = orderItemRepository;
             _mapper = mapper;
-            _createOrderValidator = createOrderValidator;
-            _updateOrderValidator = updateOrderValidator;
+            _createOrderItemValidator = createOrderItemValidator;
+            _updateOrderItemValidator = updateOrderItemValidator;
+            _menuItemRepository = menuItemRepository;
         }
 
-        public async Task<ResponseDto<List<ResultOrderDto>>> GetAllOrderItems()
+
+        public async Task<ResponseDto<object>> AddOrderItem(CreateOrderItemDto dto)
         {
             try
             {
-                var orderItems = await _genericRepository.GetAllAsync();
-                if (orderItems.Count == 0)
-                {
-                    return new ResponseDto<List<ResultOrderDto>>
-                    {
-                        Success = false,
-                        Data = null,
-                        Message = "Siparis bulunamadi",
-                        ErrorCode = ErrorCodes.NotFound
-                    };
-                }
-                var result = _mapper.Map<List<ResultOrderDto>>(orderItems);
-                return new ResponseDto<List<ResultOrderDto>>
-                {
-                    Success = true,
-                    Data = result,
-                    Message = "Siparisler listelendi..."
-                };
-            }
-            catch (Exception ex)
-            {
-                return new ResponseDto<List<ResultOrderDto>>
-                {
-                    Success = false,
-                    Data = null,
-                    Message = "Bir sorun olustu....",
-                    ErrorCode = ErrorCodes.Exception
-
-                };
-            }
-
-
-        }
-        public async Task<ResponseDto<DetailOrderDto>> GetOrderItemById(int id)
-        {
-            try
-            {
-                var orderItem = await _genericRepository.GetByIdAsync(id);
-                if (orderItem == null)
-                {
-                    return new ResponseDto<DetailOrderDto>
-                    {
-                        Success = false,
-                        Data = null,
-                        Message = "Siparis bulunamadi",
-                        ErrorCode = ErrorCodes.NotFound
-                    };
-                }
-                var result = _mapper.Map<DetailOrderDto>(orderItem);
-                return new ResponseDto<DetailOrderDto>
-                {
-                    Success = true,
-                    Data = result,
-                    Message = "Siparis bulundu..."
-                };
-
-            }
-            catch (Exception ex)
-            {
-                return new ResponseDto<DetailOrderDto> 
-                {
-                    Success = false,
-                    Data = null,
-                    Message = "Bir sorun olustu....",
-                    ErrorCode = ErrorCodes.Exception
-                };
-            }                
-
-        }
-        public async Task<ResponseDto<object>> AddOrderItem(CreateOrderDto dto)
-        {
-            try
-            {
-                var validationResult = await _createOrderValidator.ValidateAsync(dto);
-                
-                if(!validationResult.IsValid)
+                var validate = await _createOrderItemValidator.ValidateAsync(dto);
+                if (!validate.IsValid)
                 {
                     return new ResponseDto<object>
                     {
                         Success = false,
-                        Data = null,
-                        Message = "Siparis eklenemedi...",
-                        ErrorCode = ErrorCodes.ValidationError
+                        Message = string.Join(" | ", validate.Errors.Select(x => x.ErrorMessage)),
+                        ErrorCode = ErrorCodes.ValidationError,
+                        Data = null
                     };
                 }
-
-                var result = _mapper.Map<OrderItem>(dto);
-                if (result == null)
-                {
-                    return new ResponseDto<object>
-                    {
-                        Success = false,
-                        Data = null,
-                        Message = "Siparis eklenemedi...",
-                        ErrorCode = ErrorCodes.NotFound
-                    };
-                }
-                await _genericRepository.AddAsync(result);
+                var orderItem = _mapper.Map<OrderItem>(dto);
+                await _orderItemRepository.AddAsync(orderItem);
                 return new ResponseDto<object>
                 {
                     Success = true,
-                    Data = null,
-                    Message = "Siparis eklendi..."
+                    Message = "Sipariş Eklendi",
+                    Data = orderItem
                 };
 
             }
             catch (Exception ex)
             {
-
                 return new ResponseDto<object>
                 {
                     Success = false,
-                    Data = null,
-                    Message = "Bir sorun olustu....",
+                    Message = "Bir Hata Oluştu...",
                     ErrorCode = ErrorCodes.Exception
                 };
+
             }
         }
-      
+
         public async Task<ResponseDto<object>> DeleteOrderItem(int id)
         {
             try
             {
-                var orderItem = await _genericRepository.GetByIdAsync(id);
+                var orderItem = await _orderItemRepository.GetByIdAsync(id);
                 if (orderItem == null)
                 {
                     return new ResponseDto<object>
                     {
                         Success = false,
-                        Data = null,
-                        Message = "Siparis bulunamadi",
+                        Message = "Sipariş Bulunamadı",
                         ErrorCode = ErrorCodes.NotFound
                     };
                 }
-                await _genericRepository.DeleteAsync(orderItem);
+                await _orderItemRepository.DeleteAsync(orderItem);
                 return new ResponseDto<object>
                 {
                     Success = true,
-                    Data = null,
-                    Message = "Siparis silindi..."
+                    Message = "Sipariş Silindi",
+                    Data = null
                 };
 
             }
             catch (Exception ex)
             {
 
-                return new  ResponseDto<object>
+                return new ResponseDto<object>
                 {
                     Success = false,
-                    Data = null,
-                    Message = "Bir sorun olustu....",
+                    Message = "Bir Hata Oluştu...",
                     ErrorCode = ErrorCodes.Exception
                 };
             }
         }
 
-        public async Task<ResponseDto<object>> UpdateOrderItem(UpdateOrderDto dto)
+        public async Task<ResponseDto<List<ResultOrderItemDto>>> GetAllOrderItems()
         {
             try
             {
-                var validationResult = await _updateOrderValidator.ValidateAsync(dto);
-                if (!validationResult.IsValid)
+                var result = await _orderItemRepository.GetAllAsync();
+                var menuItems = await _menuItemRepository.GetAllAsync();
+                if (result.Count == 0)
+                {
+                    return new ResponseDto<List<ResultOrderItemDto>>
+                    {
+                        Success = false,
+                        Message = "Sipariş Bulunamadı",
+                        ErrorCode = ErrorCodes.NotFound
+                    };
+                }
+
+                var mappedResult = _mapper.Map<List<ResultOrderItemDto>>(result);
+                return new ResponseDto<List<ResultOrderItemDto>>
+                {
+                    Success = true,
+                    Message = "Siparişler Listelendi",
+                    Data = mappedResult
+                };
+
+            }
+            catch (Exception ex)
+            {
+                return new ResponseDto<List<ResultOrderItemDto>>
+                {
+                    Success = false,
+                    Message = "Bir Hata Oluştu...",
+                    ErrorCode = ErrorCodes.Exception
+                };
+            }
+        }
+
+        public async Task<ResponseDto<DetailOrderItemDto>> GetOrderItemById(int id)
+        {
+            try
+            {
+                var orderItem = await _orderItemRepository.GetByIdAsync(id);
+                if (orderItem == null)
+                {
+                    return new ResponseDto<DetailOrderItemDto>
+                    {
+                        Success = false,
+                        Message = "Sipariş Bulunamadı",
+                        ErrorCode = ErrorCodes.NotFound
+                    };
+                }
+                var mappedResult = _mapper.Map<DetailOrderItemDto>(orderItem);
+                return new ResponseDto<DetailOrderItemDto>
+                {
+                    Success = true,
+                    Message = "Sipariş Detayı",
+                    Data = mappedResult
+                };
+
+            }
+            catch (Exception ex)
+            {
+
+                return new ResponseDto<DetailOrderItemDto>
+                {
+                    Success = false,
+                    Message = "Bir Hata Oluştu...",
+                    ErrorCode = ErrorCodes.Exception
+                };
+            }
+        }
+
+        public async Task<ResponseDto<object>> UpdateOrderItem(UpdateOrderItemDto dto)
+        {
+            try
+            {
+                var validate = await _updateOrderItemValidator.ValidateAsync(dto);
+                if (!validate.IsValid)
                 {
                     return new ResponseDto<object>
                     {
                         Success = false,
-                        Data = null,
-                        Message = "Siparis guncellenemedi...",
-                        ErrorCode = ErrorCodes.ValidationError
+                        Message = string.Join(" | ", validate.Errors.Select(x => x.ErrorMessage)),
+                        ErrorCode = ErrorCodes.ValidationError,
+                        Data = null
                     };
                 }
-
-                var orderItem = await _genericRepository.GetByIdAsync(dto.Id);
+                var orderItem = await _orderItemRepository.GetByIdAsync(dto.Id);
                 if (orderItem == null)
                 {
                     return new ResponseDto<object>
                     {
                         Success = false,
-                        Data = null,
-                        Message = "Siparis bulunamadi",
+                        Message = "Sipariş Bulunamadı",
                         ErrorCode = ErrorCodes.NotFound
                     };
                 }
-                var result = _mapper.Map(dto, orderItem);
-                await _genericRepository.UpdateAsync(result);
+                var mappedResult = _mapper.Map(dto, orderItem);
+                await _orderItemRepository.UpdateAsync(mappedResult);
                 return new ResponseDto<object>
                 {
                     Success = true,
-                    Data = null,
-                    Message = "Siparis guncellendi..."
+                    Message = "Sipariş Güncellendi",
+                    Data = mappedResult
                 };
+
+
             }
             catch (Exception ex)
             {
+
                 return new ResponseDto<object>
                 {
                     Success = false,
-                    Data = null,
-                    Message = "Bir sorun olustu....",
+                    Message = "Bir Hata Oluştu...",
                     ErrorCode = ErrorCodes.Exception
                 };
             }
