@@ -17,6 +17,10 @@ namespace CafeApi.Application.Services.Abstract
         Task<ResponseDto<object>> DeleteOrder(int orderId);
         Task<ResponseDto<List<ResultOrderDto>>> GetAllOrderWithDetail();
         Task<ResponseDto<ResultOrderDto>> GetAllOrdersByIdWithDetails(int orderId);
+        Task<ResponseDto<object>> UpdateOrderStatusHazir(int orderId);
+        Task<ResponseDto<object>> UpdateOrderStatusHazirlaniyor(int orderId);
+        Task<ResponseDto<object>> UpdateOrderStatusTeslimEdildi(int orderId);
+
 
     }
 }

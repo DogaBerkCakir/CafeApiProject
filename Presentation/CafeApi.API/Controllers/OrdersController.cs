@@ -66,5 +66,24 @@ namespace CafeApi.API.Controllers
             return CreateResponse(result);
         }
 
+        [HttpPut("UpdateOrderStatusHazir")]
+        public async Task<IActionResult> UpdateOrderStatusHazir(int id)
+        {
+            var result = await _orderServices.UpdateOrderStatusHazir(id);
+            return CreateResponse(result);
+        }
+
+        [HttpPut("UpdateOrderStatusHazirlaniyor")]
+        public async Task<IActionResult> UpdateOrderStatusHazirlaniyor(int id)
+        {
+            var result = await _orderServices.UpdateOrderStatusHazirlaniyor(id);
+            return CreateResponse(result);
+        }
+        [HttpPut("UpdateOrderStatusTeslimEdildi")]
+        public async Task<IActionResult> UpdateOrderStatusTeslimEdildi(int id)
+        {
+            var result = await _orderServices.UpdateOrderStatusTeslimEdildi(id);
+            return CreateResponse(result);
+        }
     }
 }

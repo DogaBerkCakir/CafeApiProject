@@ -336,5 +336,123 @@ namespace CafeApi.Application.Services.Concrete
 
             }
         }
+
+        public async Task<ResponseDto<object>> UpdateOrderStatusHazir(int orderId)
+        {
+            try
+            {
+                var status = await _orderRepository.GetByIdAsync(orderId);
+                if (status == null)
+                {
+                    return new ResponseDto<object>
+                    {
+                        Data = null,
+                        Success = false,
+                        Message = "Sipariş bulunamadı.",
+                        ErrorCode = ErrorCodes.NotFound
+                    };
+                }
+                status.Status = OrderStatus.Hazir;
+                await _orderRepository.UpdateAsync(status);
+                return new ResponseDto<object>
+                {
+                    Data = null,
+                    Success = true,
+                    Message = "Sipariş durumu başarıyla güncellendi.",
+                    ErrorCode = null
+                };
+
+            }
+            catch (Exception ex)
+            {
+
+                return new ResponseDto<object>
+                {
+                    Data = null,
+                    Success = false,
+                    Message = "Bir hata oluştu...",
+                    ErrorCode = ErrorCodes.Exception
+                };
+            }
+           
+        }
+
+        public async Task<ResponseDto<object>> UpdateOrderStatusHazirlaniyor(int orderId)
+        {
+            try
+            {
+                var status = await _orderRepository.GetByIdAsync(orderId);
+                if (status == null)
+                {
+                    return new ResponseDto<object>
+                    {
+                        Data = null,
+                        Success = false,
+                        Message = "Sipariş bulunamadı.",
+                        ErrorCode = ErrorCodes.NotFound
+                    };
+                }
+                status.Status = OrderStatus.Hazirlaniyor;
+                await _orderRepository.UpdateAsync(status);
+                return new ResponseDto<object>
+                {
+                    Data = null,
+                    Success = true,
+                    Message = "Sipariş durumu başarıyla güncellendi.",
+                    ErrorCode = null
+                };
+
+            }
+            catch (Exception ex)
+            {
+
+                return new ResponseDto<object>
+                {
+                    Data = null,
+                    Success = false,
+                    Message = "Bir hata oluştu...",
+                    ErrorCode = ErrorCodes.Exception
+                };
+            }
+        }
+
+        public async Task<ResponseDto<object>> UpdateOrderStatusTeslimEdildi(int orderId)
+        {
+            try
+            {
+                var status = await _orderRepository.GetByIdAsync(orderId);
+                if (status == null)
+                {
+                    return new ResponseDto<object>
+                    {
+                        Data = null,
+                        Success = false,
+                        Message = "Sipariş bulunamadı.",
+                        ErrorCode = ErrorCodes.NotFound
+                    };
+                }
+                status.Status = OrderStatus.TeslimEdildi;
+                await _orderRepository.UpdateAsync(status);
+                return new ResponseDto<object>
+                {
+                    Data = null,
+                    Success = true,
+                    Message = "Sipariş durumu başarıyla güncellendi.",
+                    ErrorCode = null
+                };
+
+            }
+            catch (Exception ex)
+            {
+
+                return new ResponseDto<object>
+                {
+                    Data = null,
+                    Success = false,
+                    Message = "Bir hata oluştu...",
+                    ErrorCode = ErrorCodes.Exception
+                };
+            }
+        }
     }
 }
