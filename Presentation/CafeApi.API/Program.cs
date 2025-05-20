@@ -4,6 +4,8 @@ using CafeApi.Application.Services.Abstract;
 using CafeApi.Application.Services.Concrete;
 using CafeApi.Application.Validators.Category;
 using CafeApi.Application.Validators.MenuItem;
+using CafeApi.Application.Validators.Order;
+using CafeApi.Application.Validators.OrderItem;
 using CafeApi.Application.Validators.Table;
 using CafeApi.Persistence.Context;
 using CafeApi.Persistence.Repository;
@@ -27,6 +29,7 @@ builder.Services.AddScoped<IOrderItemServices, OrderItemService>();
 builder.Services.AddScoped<IMenuItemServices,MenuItemServices>();
 builder.Services.AddScoped<ICategoryServices,CategoryServices>();
 builder.Services.AddScoped<ITableServices, TableServices>();
+builder.Services.AddScoped<IOrderServices, OrderServices>();
 
 
 
@@ -37,6 +40,11 @@ builder.Services.AddValidatorsFromAssemblyContaining<UpdateCategoryValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateMenuItemValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<UpdateCategoryValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<AddTableValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<AddOrderItemValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<AddOrderValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<UpdateOrderValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<UpdateOrderItemValidator>();
+
 
 
 
