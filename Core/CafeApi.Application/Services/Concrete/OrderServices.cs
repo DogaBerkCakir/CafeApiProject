@@ -24,7 +24,8 @@ namespace CafeApi.Application.Services.Concrete
         private readonly IGenericRepository<OrderItem> _orderItemRepository;
         private readonly IGenericRepository<MenuItem> _menuItemRepository;
         private readonly IOrderRepository _orderRepository1;
-        public OrderServices(IGenericRepository<Order> orderRepository, IMapper mapper, IValidator<CreateOrderDto> validator, IValidator<UpdateOrderDto> updateOrderValidator, IGenericRepository<OrderItem> orderItemRepository, IGenericRepository<MenuItem> menuItemRepository, IOrderRepository orderRepository1)
+        private readonly IGenericRepository<Category> _categoryRepository;
+        public OrderServices(IGenericRepository<Order> orderRepository, IMapper mapper, IValidator<CreateOrderDto> validator, IValidator<UpdateOrderDto> updateOrderValidator, IGenericRepository<OrderItem> orderItemRepository, IGenericRepository<MenuItem> menuItemRepository, IOrderRepository orderRepository1, IGenericRepository<Category> categoryRepository)
         {
             _orderRepository = orderRepository;
             _mapper = mapper;
@@ -33,6 +34,7 @@ namespace CafeApi.Application.Services.Concrete
             _orderItemRepository = orderItemRepository;
             _menuItemRepository = menuItemRepository;
             _orderRepository1 = orderRepository1;
+            _categoryRepository = categoryRepository;
         }
 
         public async Task<ResponseDto<object>> AddOrder(CreateOrderDto dto)
@@ -135,6 +137,7 @@ namespace CafeApi.Application.Services.Concrete
                 var orders = await _orderRepository.GetAllAsync();
                 var orderItems = await _orderItemRepository.GetAllAsync();
                 var menuItems = await _menuItemRepository.GetAllAsync();
+                var categories = await _categoryRepository.GetAllAsync();
 
                 if (orders.Count == 0 || orders == null)
                 {

@@ -1,3 +1,5 @@
+using System.Text;
+using CafeApi.Application.Helpers;
 using CafeApi.Application.Interfaces;
 using CafeApi.Application.Mapping;
 using CafeApi.Application.Services.Abstract;
@@ -10,8 +12,11 @@ using CafeApi.Application.Validators.Table;
 using CafeApi.Persistence.Context;
 using CafeApi.Persistence.Repository;
 using FluentValidation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +36,9 @@ builder.Services.AddScoped<IMenuItemServices,MenuItemServices>();
 builder.Services.AddScoped<ICategoryServices,CategoryServices>();
 builder.Services.AddScoped<ITableServices, TableServices>();
 builder.Services.AddScoped<IOrderServices, OrderServices>();
+builder.Services.AddScoped<IAuthServices, AuthServices>();
+builder.Services.AddScoped<TokenHelpers>();
+
 
 
 
@@ -53,6 +61,37 @@ builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+//JWT YAPILANDIRILMASI
+builder.Services.AddAuthentication(opt =>
+{
+    opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(o =>
+{
+    o.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"], // string bekler
+        ValidAudience = builder.Configuration["Jwt:Audience"], // doðru anahtar
+        IssuerSigningKey = new SymmetricSecurityKey(
+        Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+    };
+
+});
+
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddHttpContextAccessor();
+
+
+
+
+
+
+
 var app = builder.Build();
 
 app.MapScalarApiReference(
@@ -71,6 +110,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
